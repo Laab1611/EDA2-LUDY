@@ -36,7 +36,6 @@ root.right.left = new Node(17);
 root.right.right = new Node(31);
 root.left.left.right = new Node(5);
 
-// Crea una instancia de BinaryTree con root como su raíz
 const tree = new BinaryTree(root);
 
 // Calcula la altura del árbol 
