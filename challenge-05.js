@@ -1,121 +1,92 @@
-class PersonNode {
-  constructor(fullName, birthdate) {
-    this.fullName = fullName;
-    this.birthdate = birthdate;
-    this.children = [];
-  }
-}
-
+// Clase que representa un árbol genealógico
 class FamilyTree {
-  constructor(root) {
-    this.root = root;
-  }
-
-  // Método para encontrar un nodo por el nombre completo (usado para encontrar padres)
-  searchNode(fullName, node = this.root) {
-    if (!this.root) {
-      return null;
+    constructor() {
+        this.root = null; // Inicialmente, el árbol está vacío
     }
 
-    if (node.fullName === fullName) {
-      return node;
-    } else {
-      const children = node.children;
-
-      const inChildren = children.find((child) => child.fullName === fullName);
-      if (inChildren) {
-        return inChildren;
-      } else {
-        for (let child of children) {
-          const found = this.searchNode(fullName, child);
-          if (found) {
-            return found;
-          }
+    // Método para insertar un nuevo miembro en el árbol
+    insert(name, birthDate, parentName = null) {
+        const newNode = { name, birthDate, children: [] }; // Crear un nuevo nodo
+        if (this.root === null) {
+            this.root = newNode; // Si el árbol está vacío, el nuevo nodo es la raíz
+        } else {
+            const parent = this.findNode(this.root, parentName); // Buscar el nodo padre
+            if (parent) {
+                parent.children.push(newNode); // Añadir el nuevo nodo como hijo del nodo padre
+            }
         }
-      }
     }
-    return null;
-  }
 
-  // Método para agregar un hijo a un padre específico
-  insertChild(fullName, birthdate, parent) {
-    const newNode = new PersonNode(fullName, birthdate);
-
-    if (!parent) {
-      if (!this.root) {
-        this.root = newNode;
-      } else {
-        return null;
-      }
-    } else {
-      const parentNode = this.searchNode(parent);
-      if (parentNode) {
-        parentNode.children.push(newNode);
-      } else {
-        return "Parent not found";
-      }
+    // Método para encontrar un nodo por nombre
+    findNode(node, name) {
+        if (node.name === name) {
+            return node; // Si el nodo actual es el buscado, devolverlo
+        }
+        for (let child of node.children) {
+            const result = this.findNode(child, name); // Buscar recursivamente en los hijos
+            if (result) {
+                return result; // Si se encuentra el nodo, devolverlo
+            }
+        }
+        return null; // Si no se encuentra el nodo, devolver null
     }
-  }
 
-  // Recorrido en preOrder: primero el padre, luego los hijos (de arriba hacia abajo)
-  preOrder(node = this.root) {
-    if (!node) {
-      return;
+    // Método para recorrer el árbol en orden (in-order)
+    inOrder(node = this.root) {
+        if (node === null) {
+            return; // Si el nodo es null, terminar la recursión
+        }
+        if (node.children.length > 0) {
+            this.inOrder(node.children[0]); // Recorrer el subárbol izquierdo
+        }
+        console.log(node.name); // Visitar el nodo raíz
+        for (let i = 1; i < node.children.length; i++) {
+            this.inOrder(node.children[i]); // Recorrer el subárbol derecho
+        }
     }
-    console.log(
-      `Full Name: ${node.fullName}, Birthday Date: (${node.birthdate})`
-    );
-    node.children.forEach((child) => this.preOrder(child));
-  }
 
-  // Post-order traversal: children, then parent (bottom-up)
-  postOrder(node = this.root) {
-    if (!node) {
-      return;
+    // Método para recorrer el árbol en preorden (pre-order)
+    preOrder(node = this.root) {
+        if (node === null) {
+            return; // Si el nodo es null, terminar la recursión
+        }
+        console.log(node.name); // Visitar el nodo raíz
+        for (let child of node.children) {
+            this.preOrder(child); // Recorrer recursivamente los hijos
+        }
     }
-    node.children.forEach((child) => this.postOrder(child));
-    console.log(
-      `Full Name: ${node.fullName}, Birthday Date: (${node.birthdate})`
-    );
-  }
 
-  // In-order traversal: first child, then parent, then remaining children (customized for N-ary trees)
-  inOrder(node = this.root) {
-    if (!node) {
-      return;
+    // Método para recorrer el árbol en postorden (post-order)
+    postOrder(node = this.root) {
+        if (node === null) {
+            return; // Si el nodo es null, terminar la recursión
+        }
+        for (let child of node.children) {
+            this.postOrder(child); // Recorrer recursivamente los hijos
+        }
+        console.log(node.name); // Visitar el nodo raíz
     }
-    if (node.children.length === 0) {
-      console.log(`"Full Name:" ${node.fullName}, "Birthday Date:" (${node.birthdate})`);
-    } else {
-      this.inOrder(node.children[0]);
-      console.log(`"Full Name:" ${node.fullName}, "Birthday Date:" (${node.birthdate})`);
-
-      for (let i = 1; i < node.children.length; i++) {
-        this.inOrder(node.children[i]);
-      }
-    }
-  }
 }
 
-// Example:
+// Pruebas
+const familyTree = new FamilyTree();
+console.log(familyTree, "(Antes de Insertar)"); // Mostrar el árbol antes de insertar nodos
 
-// Create root node (first generation)
-const root = new PersonNode("John Doe", "1950-01-01");
+// Insertar miembros en el árbol
+familyTree.insert("Juan", "01/01/1980");
+familyTree.insert("María", "01/01/1982", "Juan");
+familyTree.insert("Carlos", "01/01/2000", "María");
+familyTree.insert("Laura", "01/01/2002", "María");
+console.log(familyTree, "(Después de Insertar)"); // Mostrar el árbol después de insertar nodos
 
-// Create the family tree object
-const familyTree = new FamilyTree(root);
-
-// Add children to specific parents
-familyTree.insertChild("Jane Doe", "1970-01-01", "John Doe");
-familyTree.insertChild("Jim Doe", "1975-01-01", "John Doe");
-familyTree.insertChild("Jack Doe", "1980-01-01", "John Doe");
-
-// Print the tree in different orders
-console.log("Pre-Order:");
+// Recorrer el árbol en preorden
+console.log("- - - PreOrder - - -");
 familyTree.preOrder();
 
-console.log("\nPost-Order:");
+// Recorrer el árbol en postorden
+console.log("- - - PostOrder - - -");
 familyTree.postOrder();
 
-console.log("\nIn-Order:");
+// Recorrer el árbol en orden
+console.log("- - - InOrder - - -");
 familyTree.inOrder();
