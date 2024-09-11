@@ -10,7 +10,7 @@ const getGifs = async (category) => {
         return {
             id: img.id,
             title: img.title,
-            url: img.images.downsized_medium.url
+            url: img.images.original.url
         }
     });
     return gifs;
@@ -18,13 +18,7 @@ const getGifs = async (category) => {
 
 const GifGrid = ({ category }) => {
 
-    useEffect(() => {
-        console.log({ category });
-        // Llamar a la función getGifs y manejar los datos
-        getGifs(category).then(gifs => {
-            console.log(gifs);
-        });
-    }, [category]); // Añadir category como dependencia
+    getGifs( category)
 
     return (
         <>
