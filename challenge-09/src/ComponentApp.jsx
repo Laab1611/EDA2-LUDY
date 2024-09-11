@@ -6,7 +6,7 @@ import AddCategory from "./components/AddCategory";
 import GifGrid from "./components/GifGrid";
 
 const ComponentApp = () => {
-    const [categories, setCategories] = useState(['Zodiac']);
+    const [categories, setCategories] = useState(['Holis']);
 
     const onAddCategory = (category) => {
         setCategories( list => [...list, category])

@@ -4,8 +4,7 @@ const GifGrid = ({category}) =>{
 
     useEffect(() => {
         console.log({category})
-
-    })
+    }, [])
 
     return (
         <>
